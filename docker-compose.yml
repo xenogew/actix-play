@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  # podman run --name actix-mongo --rm -p 127.0.0.1:27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=example -v "$(pwd)/local/mongodb/init:/docker-entrypoint-initdb.d:ro" -d docker.io/library/mongo:5.0-focal
+  mongo:
+    image: mongo:5.0-focal
+    container_name: sw-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - "$(pwd)/local/mongodb/init:/docker-entrypoint-initdb.d:ro"
