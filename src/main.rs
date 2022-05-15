@@ -1,6 +1,5 @@
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use tracing_actix_web::TracingLogger;
-use tracing::{info, instrument};
+use log::info;
 use rand::Rng;
 
 #[get("/")]
@@ -13,7 +12,6 @@ async fn echo(req_body: String) -> impl Responder {
     HttpResponse::Ok().body(req_body)
 }
 
-#[instrument]
 #[get("/api/v1/gen/password/random")]
 async fn random_password() -> impl Responder {
     const DEFAULT_LENGTH: usize = 16;
@@ -48,9 +46,10 @@ async fn manual_hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env_logger::init();
+
     HttpServer::new(|| {
         App::new()
-            .wrap(TracingLogger::default())
             .service(hello)
             .service(echo)
             .service(random_password)
