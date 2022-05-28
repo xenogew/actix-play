@@ -25,7 +25,7 @@ async fn health_check() -> impl Responder {
 
 #[get("/api/v1/gen/password/random")]
 async fn random_password() -> Result<impl Responder> {
-    const DEFAULT_LENGTH: usize = 16;
+    const DEFAULT_LENGTH: usize = 512;
     let is_special = true;
     let lower_case_letters = "abcdefghijklmnopqrstuvwxyz";
     let upper_case_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -67,7 +67,7 @@ async fn main() -> std::io::Result<()> {
             .service(random_password)
             .service(echo)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
