@@ -1,0 +1,40 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:20-git
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - restore_cache:
+          keys:
+            - santa-soft-{{ .Branch }}
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build Actix-Play image
+          command: docker build --pull --rm -f "Containerfile" -t actixplay:latest
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - save_cache:
+          key: santa-soft-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build_image: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
+    jobs:
+      - build
