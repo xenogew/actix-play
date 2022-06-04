@@ -28,8 +28,7 @@ struct RandomPasswordRequest {
     number: bool,
     lower: bool,
     upper: bool,
-    similar: bool,
-    ambiguous: bool,
+    x_similar: bool,
 }
 
 #[derive(Serialize)]
@@ -56,22 +55,22 @@ async fn random_password(request: web::Json<RandomPasswordRequest>) -> Result<im
 
     info!(
         log,
-        "len: {}, symbol: {}, number: {}, lower: {}, upper: {}, similar: {}, ambiguous: {}",
+        "len: {}, symbol: {}, number: {}, lower: {}, upper: {}, x-similar: {}",
         request.pwd_length,
         request.symbol,
         request.number,
         request.lower,
         request.upper,
-        request.similar,
-        request.ambiguous
+        request.x_similar
     );
-    let lower_case_letters = "abcdefghijklmnopqrstuvwxyz";
-    let upper_case_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let numbers = "0123456789";
-    let symbols = "@!#%&+-*=?$^_";
+    let lower_case_letters = "abcdefghjkmnpqrstuvwxyz";
+    let upper_case_letters = "ABCDEFGHJKMNPQRSTUVWXYZ";
+    let numbers = "23456789";
+    let symbols = "!@#%&+$-*=?^_";
+    let similar = "Iil1|Lo0O";
 
     let available_stack = format!(
-        "{}{}{}{}",
+        "{}{}{}{}{}",
         if request.lower {
             lower_case_letters
         } else {
@@ -83,7 +82,8 @@ async fn random_password(request: web::Json<RandomPasswordRequest>) -> Result<im
             ""
         },
         if request.number { numbers } else { "" },
-        if request.symbol { symbols } else { "" }
+        if request.symbol { symbols } else { "" },
+        if request.x_similar { "" } else { similar }
     );
     let available_size = available_stack.len();
 
