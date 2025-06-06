@@ -3,8 +3,6 @@ use rand::Rng;
 use serde::Deserialize;
 use serde::Serialize;
 use slog::{info, o, Drain, Logger};
-use slog_async;
-use slog_term;
 use slog_term::TermDecorator;
 
 fn configure_log() -> Logger {
@@ -89,7 +87,7 @@ async fn random_password(request: web::Json<RandomPasswordRequest>) -> Result<im
 
     let mut carrier = vec![0; request.pwd_length as usize];
     for member in carrier.iter_mut() {
-        let rand_number = rand::thread_rng().gen_range(0..available_size);
+        let rand_number = rand::rng().random_range(0..available_size);
         let picked_char = available_stack.chars().nth(rand_number).unwrap();
         *member = picked_char as u32;
     }
